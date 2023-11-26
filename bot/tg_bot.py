@@ -10,6 +10,7 @@ from aiogram.types import Message
 from aiogram.utils.markdown import hbold
 
 from secret_env import BOT_TOKEN
+from bot.behavior import Behavior
 
 # Bot token can be obtained via https://t.me/BotFather
 # TOKEN = getenv("BOT_TOKEN")
@@ -22,7 +23,6 @@ class TGBot:
         self._bot = Bot(token, parse_mode=parse_mode)
         self._dp = Dispatcher()
 
-        from bot.behavior import Behavior
         self._behavior = Behavior(self._dp, self._bot)
         self._behavior.configure()
 
