@@ -1,18 +1,11 @@
-import asyncio
 import logging
 import pathlib
-import sys
-import html
-from os import getenv
 
 from aiogram import Bot, Dispatcher, Router, types
-from aiogram.enums import ParseMode
-from aiogram.filters import CommandStart
-from aiogram.types import Message, ReplyKeyboardRemove, Document
-from aiogram.utils.markdown import hbold
 from aiogram import F
 
 from bot.content_type import ContentType
+from common.format_contribution_file import FormatContributionFile
 from domain.domain_model.message_domain import MessageDomain
 from domain.scheduler import Scheduler
 
@@ -25,7 +18,7 @@ class Behavior:
         self._scheduler = Scheduler(self.send_message)
 
     def configure(self):
-        logging.info(f"INFO: Configure behavior")
+        logging.info(f"bot: Configure behavior")
         router_test = Router(name="test")
 
         router_test.message.register(self.document_message_handler, F.content_type == "document")
@@ -36,16 +29,17 @@ class Behavior:
         self._dp.include_router(router_test)
 
     async def callback_query_handler(self, callback_query: types.CallbackQuery):
-        logging.info(f"INFO: Received callback_query from id={callback_query.message.chat.id} data={callback_query.data}")
+        logging.info(f"bot: Received callback_query from id={callback_query.message.chat.id} data={callback_query.data}")
 
         await self._scheduler.handle_message(MessageDomain(
             str(callback_query.message.chat.id),
             callback_query.data,
-            username=callback_query.message.chat.username
+            username=callback_query.message.chat.username,
+            content_type=ContentType.TEXT
         ))
 
     async def message_handler(self, message: types.Message) -> None:
-        logging.info(f"Received message from user id={message.chat.id} with text={message.text}")
+        logging.info(f"bot: Received message from user id={message.chat.id} with text={message.text}")
         print(message.document)
 
         await self._scheduler.handle_message(MessageDomain(
@@ -71,7 +65,7 @@ class Behavior:
     async def download_file(self, document: types.Document) -> pathlib.Path:
         file = await self._bot.get_file(document.file_id)
         file_path = file.file_path
-        local_file_path = pathlib.Path("../files/contribution.cvs")
+        local_file_path = FormatContributionFile.path
 
         logging.info(f"bot: Downloading file {document.file_name} in {local_file_path}")
         await self._bot.download_file(file_path, local_file_path)

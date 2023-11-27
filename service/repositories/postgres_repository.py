@@ -22,6 +22,20 @@ class PostgresRepository(BaseRepository):
         )
         return await self._insert_one(entity)
 
+    async def insert_many_contributions(self, many_contribution: list[dict]):
+        entities = []
+        for contribution in many_contribution:
+            student_id = await self.select_student_id_by_student_id_number(contribution.get("student_id"))
+
+            entities.append(ContributionEntity(
+                amount=contribution.get("amount"),
+                student_id=student_id,
+                season=contribution.get("season"),
+                year=contribution.get("year"),
+                status=contribution.get("status")
+            ))
+        return await self._insert_many(entities)
+
     async def insert_student(self, name: str, surname: str, student_id_number: str):
         entity = StudentEntity(
             name=name,
@@ -115,6 +129,6 @@ class PostgresRepository(BaseRepository):
 
     async def get_student_id_number_by_telegram(self, telegram: str):
         stmt = select(UserEntity.student_id).where(UserEntity.telegram == telegram)
-        student_id = await self._select_one(stmt)
+        student_id = str(await self._select_one(stmt))
         stmt = select(StudentEntity.student_id_number).where(StudentEntity.student_id == student_id)
         return await self._select_one(stmt)

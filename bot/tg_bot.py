@@ -12,8 +12,7 @@ from aiogram.utils.markdown import hbold
 from secret_env import BOT_TOKEN
 from bot.behavior import Behavior
 
-# Bot token can be obtained via https://t.me/BotFather
-# TOKEN = getenv("BOT_TOKEN")
+
 TOKEN = BOT_TOKEN
 
 
