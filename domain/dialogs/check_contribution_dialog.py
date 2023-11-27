@@ -26,7 +26,8 @@ class CheckContributionDialog(DialogBase):
 
     async def wait_student_id_for_contribution(self, message: MessageDomain):
         if await self._check_right_student_id(message.text):
-            await self._send_message(message.chat_id, await self._get_text_by_status_contribution_by_chat_id(message.text))
+            await self._send_message(message.chat_id,
+                                     await self._get_text_by_status_contribution_by_chat_id(message.text))
         else:
             await self._send_message(message.chat_id, CheckContributionText.NOT_KNOWN)
             await self._send_message(message.chat_id, CheckContributionText.ENTER_STUDENT_ID)
@@ -45,4 +46,4 @@ class CheckContributionDialog(DialogBase):
         return CheckContributionText.CONTRIBUTION_IS_NOT_IN_DB
 
     async def _check_right_student_id(self, student_id):
-        return re.fullmatch(r'\d\d\w\d\d\d\d', student_id)
+        return await self._storage.check_right_student_id(student_id)
