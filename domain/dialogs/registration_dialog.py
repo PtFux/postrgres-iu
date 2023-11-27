@@ -1,5 +1,4 @@
 import logging
-import re
 
 from domain.dialogs.dialog_base import DialogBase
 from domain.domain_model.filter import Filter
@@ -16,7 +15,7 @@ class RegistrationDialog(DialogBase):
         self._last_kb = None
 
     async def start(self, message: MessageDomain):
-        logging.info(f"INFO: start registration dialog, text={message.text}")
+        logging.info(f"domain: start registration dialog, text={message.text}")
         await self._send_message_with_kb(message.chat_id, RegistrationText.HELLO)
 
         self._last_kb = StartRegistrationStudentIdKB()
@@ -47,6 +46,9 @@ class RegistrationDialog(DialogBase):
             else:
                 if await self._storage.add_default_user(message.chat_id):
                     await self._send_message_with_kb(message.chat_id, RegistrationText.SUCCESSFUL_REGISTRATION)
+                    admin = await self._storage.get_admin_chat_id()
+                    await self._send_message(admin, RegistrationText.MESSAGE_FOR_ADMIN.format(username=message.username,
+                                                                                              student_id=message.text))
                     return True
                 else:
                     await self._send_message_with_kb(message.chat_id, RegistrationText.NOT_SUCCESSFUL_REGISTRATION)
@@ -54,7 +56,7 @@ class RegistrationDialog(DialogBase):
             await self._send_message_with_kb(message.chat_id, RegistrationText.NEED_REGISTRATION)
 
     async def _check_right_student_id(self, student_id):
-        return re.fullmatch(r'\d\d\w\d\d\d\d', student_id)
+        return await self._storage.check_right_student_id(student_id)
 
     async def _check_registration(self, chat_id):
         return await self._storage.check_registration_by_chat_id(chat_id)

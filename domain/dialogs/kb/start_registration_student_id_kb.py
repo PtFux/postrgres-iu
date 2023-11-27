@@ -1,9 +1,7 @@
-from enum import Enum
-
 from domain.dialogs.kb.base_kb import Button, BaseKB
 
 
-class StatusStudent(Enum):
+class StatusStudent:
     STUDENT = "wait_student_id"
     NO_STUDENT = "no_student"
 

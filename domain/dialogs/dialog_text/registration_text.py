@@ -13,4 +13,7 @@ class RegistrationText:
     # wait student id
     AGAIN_REGISTRATION = "Вы уже регистрировалсь ранее."
     SUCCESSFUL_REGISTRATION = "Успешная регистрация!"
-    NOT_SUCCESSFUL_REGISTRATION = "Недачная попытка. Напишит администратору @PtFux"
+    NOT_SUCCESSFUL_REGISTRATION = "Недачная попытка."
+
+    MESSAGE_FOR_ADMIN = "Пользователь @{username} со студенческим биелтом {student_id} \
+    успешно зарегистрировался в системе"
