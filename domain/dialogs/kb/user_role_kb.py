@@ -1,9 +1,7 @@
-from enum import Enum
-
 from domain.dialogs.kb.base_kb import Button, BaseKB
 
 
-class UserRole(Enum):
+class UserRole:
     ADMIN = "admin_role"
     MODERATOR = "moderator_role"
     DUTY = "duty_role"
@@ -11,9 +9,9 @@ class UserRole(Enum):
     @staticmethod
     def values():
         return [
-            UserRole.ADMIN.value,
-            UserRole.MODERATOR.value,
-            UserRole.DUTY.value
+            UserRole.ADMIN,
+            UserRole.MODERATOR,
+            UserRole.DUTY
         ]
 
 

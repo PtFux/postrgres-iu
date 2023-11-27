@@ -17,7 +17,7 @@ class UserRoleUpdateDialog(DialogBase):
         self._last_kb = None
 
     async def start(self, message: MessageDomain):
-        logging.info(f"INFO: start user role update dialog, text={message.text}")
+        logging.info(f"domain: start user role update dialog, text={message.text}")
 
         if await self._storage.check_registration_by_chat_id(message.chat_id):
             self.temp = self.wait_user_role
@@ -29,12 +29,17 @@ class UserRoleUpdateDialog(DialogBase):
             return True
 
     async def wait_user_role(self, message: MessageDomain):
-        print(message.text, UserRole.values())
         if message.text in UserRole.values():
             await self._send_message(message.chat_id, UserRoleUpdateText.QUERY_IS_SENDED)
             admin_chat_id = await self._get_admin_chat_id()
-            await self._send_message(admin_chat_id,
-                                     UserRoleUpdateText.QUERY_FOR_ROLE.format(message.username, message.text))
+            await self._send_message(
+                admin_chat_id,
+                UserRoleUpdateText.QUERY_FOR_ROLE.format(
+                    username=message.username,
+                    role=message.text,
+                    give_role_cmd=Filter.GIVE_OUT_THE_ROLE,
+                    chat_id=message.chat_id)
+            )
             return True
         else:
             await self._send_message(message.chat_id, UserRoleUpdateText.NOT_KNOWN)
@@ -42,7 +47,7 @@ class UserRoleUpdateDialog(DialogBase):
             await self._send_message_with_kb(message.chat_id, UserRoleUpdateText.CHOOSE_ROLE, builder.as_markup())
 
     async def _check_right_student_id(self, student_id):
-        return re.fullmatch(r'\d\d\w\d\d\d\d', student_id)
+        return await self._storage.check_right_student_id(student_id)
 
     async def _get_admin_chat_id(self):
         return await self._storage.get_admin_chat_id()

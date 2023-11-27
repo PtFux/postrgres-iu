@@ -1,7 +1,8 @@
-from enum import Enum
+from dataclasses import dataclass
 
 
-class UserRoleCode(Enum):
+@dataclass
+class UserRoleCode:
     GOD = "god"
     ADMIN = "admin"
     DUTY = "duty"
