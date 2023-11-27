@@ -17,6 +17,7 @@ class Scheduler:
         self._storage = Storage()
 
     async def handle_message(self, message: MessageDomain):
+        print(self.dialogs)
         match message.text:
             case RegistrationDialog.filter:
                 dialog = RegistrationDialog(message.chat_id, self._storage, send_message=self._send_message)
@@ -36,7 +37,8 @@ class Scheduler:
                         self.dialogs.update({message.chat_id: dialog})
                     else:
                         dialog = RegistrationDialog(message.chat_id, self._storage, self._send_message)
-
+        print(self.dialogs)
+        print(dialog.temp)
         end = await dialog.temp(message)
         if end:
             self.dialogs.pop(message.chat_id)
