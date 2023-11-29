@@ -1,29 +1,13 @@
 from domain.dialogs.kb.base_kb import Button, BaseKB
-
-
-class UserRole:
-    ADMIN = "admin_role"
-    MODERATOR = "moderator_role"
-    DUTY = "duty_role"
-
-    @staticmethod
-    def values():
-        return [
-            UserRole.ADMIN,
-            UserRole.MODERATOR,
-            UserRole.DUTY
-        ]
+from domain.domain_model.roles import *
 
 
 class UserRoleKB(BaseKB):
     buttons = {
-        UserRole.ADMIN:
+        AdminRole.role_code:
         Button("Я администратор",
-               UserRole.ADMIN),
-        UserRole.MODERATOR:
-        Button("Я модератор",
-               UserRole.MODERATOR),
-        UserRole.DUTY:
+               AdminRole.role_code),
+        DutyRole.role_code:
         Button("Я дежурный",
-               UserRole.DUTY)
+               DutyRole.role_code)
     }
