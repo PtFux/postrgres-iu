@@ -16,6 +16,9 @@ class RegistrationDialog(DialogBase):
 
     async def start(self, message: MessageDomain):
         logging.info(f"domain: start registration dialog, text={message.text}")
+        if await self._storage.check_registration_by_chat_id(message.chat_id):
+            await self._send_message(message.chat_id, RegistrationText.AGAIN_REGISTRATION)
+            return True
         await self._send_message_with_kb(message.chat_id, RegistrationText.HELLO)
 
         self._last_kb = StartRegistrationStudentIdKB()
@@ -39,24 +42,16 @@ class RegistrationDialog(DialogBase):
 
     async def wait_student_id(self, message: MessageDomain):
         self.temp = self.get_status_student_or_no_student
-        if await self._check_right_student_id(message.text):
-            if await self._check_registration(message.chat_id):
-                await self._send_message_with_kb(message.chat_id, RegistrationText.AGAIN_REGISTRATION)
+        if await self._storage.check_right_student_id(message.text.upper()):
+            if await self._storage.add_default_user(message.chat_id):
+                await self._send_message_with_kb(message.chat_id, RegistrationText.SUCCESSFUL_REGISTRATION)
+                admin = await self._storage.get_admin_chat_id()
+                await self._send_message(admin, RegistrationText.MESSAGE_FOR_ADMIN.format(username=message.username,
+                                                                                          student_id=message.text))
                 return True
             else:
-                if await self._storage.add_default_user(message.chat_id):
-                    await self._send_message_with_kb(message.chat_id, RegistrationText.SUCCESSFUL_REGISTRATION)
-                    admin = await self._storage.get_admin_chat_id()
-                    await self._send_message(admin, RegistrationText.MESSAGE_FOR_ADMIN.format(username=message.username,
-                                                                                              student_id=message.text))
-                    return True
-                else:
-                    await self._send_message_with_kb(message.chat_id, RegistrationText.NOT_SUCCESSFUL_REGISTRATION)
+                await self._send_message_with_kb(message.chat_id, RegistrationText.NOT_SUCCESSFUL_REGISTRATION)
         else:
             await self._send_message_with_kb(message.chat_id, RegistrationText.NEED_REGISTRATION)
 
-    async def _check_right_student_id(self, student_id):
-        return await self._storage.check_right_student_id(student_id)
 
-    async def _check_registration(self, chat_id):
-        return await self._storage.check_registration_by_chat_id(chat_id)

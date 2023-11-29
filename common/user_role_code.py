@@ -6,5 +6,6 @@ class UserRoleCode:
     GOD = "god"
     ADMIN = "admin"
     DUTY = "duty"
-    MODERATOR = "moderator"
     USER = "user"
+
+    BASE = "base"

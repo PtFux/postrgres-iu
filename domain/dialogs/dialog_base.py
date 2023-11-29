@@ -32,3 +32,10 @@ class DialogBase:
             markup=builder_kb
         )
 
+    async def _check_right_student_id(self, student_id):
+        return await self._storage.check_right_student_id(student_id)
+
+    async def _get_user_role_by_chat_id(self, chat_id: str, default=None):
+        return await self._storage.get_user_role_by_chat_id(chat_id, default)
+
+

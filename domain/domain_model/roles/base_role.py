@@ -1,9 +1,11 @@
 from dataclasses import dataclass
 
+from common.user_role_code import UserRoleCode
+
 
 @dataclass
 class BaseRole:
-    role_code = "base"
+    role_code = UserRoleCode.BASE
 
     can_check_contribution = False
     can_loading_data = False

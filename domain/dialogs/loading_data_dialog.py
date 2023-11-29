@@ -12,24 +12,26 @@ from domain.dialogs.dialog_text.user_role_update_text import UserRoleUpdateText
 from domain.dialogs.kb.user_role_kb import UserRoleKB, UserRole
 from domain.domain_model.filter import Filter
 from domain.domain_model.message_domain import MessageDomain
+from domain.domain_model.roles import AllRoles
 
 
 class LoadingDataDialog(DialogBase):
     filter = Filter.LOADING_DATA
+    right = "can_loading_data"
 
     def __init__(self, chat_id, storage, send_message):
         super().__init__(chat_id, storage, send_message)
         self._last_kb = None
-        self._enable_role = [UserRoleCode.DUTY, UserRoleCode.ADMIN, UserRoleCode.MODERATOR, UserRoleCode.GOD]
+        self._enable_role = AllRoles().get_enable_role_code_by_atr_name(self.right)
 
     async def start(self, message: MessageDomain):
         logging.info(f"domain: start loading data dialog, text={message.text}")
-        if not await self._storage.check_registration_by_chat_id(message.chat_id):
+
+        role = await self._get_user_role_by_chat_id(message.chat_id)
+        if not role:
             await self._send_message(message.chat_id, LoadingDataText.NEED_REGISTRATION)
             return True
-
-        role = await self._storage.get_user_role_from_chat_id(message.chat_id)
-        if role in self._enable_role:
+        elif role in self._enable_role:
             await self._send_message(
                 message.chat_id,
                 LoadingDataText.WRITE_CSV.format(table=" | ".join(FormatContributionFile().get_headliner()))
@@ -55,7 +57,7 @@ class LoadingDataDialog(DialogBase):
             await self._storage.insert_students(students)
             await self._storage.insert_contributions(contributions)
             await self._send_message(message.chat_id, LoadingDataText.SUCCESSFUL)
-        except Exception as e:
+        except Exception:
             await self._send_message(message.chat_id, LoadingDataText.EXCEPTION)
         return True
 

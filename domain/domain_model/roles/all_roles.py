@@ -20,15 +20,15 @@ class AllRoles:
             atr for atr in dir(BaseRole) if atr.startswith("can")
         ]
 
-    def get_enable_role_by_atr_name(self, atr_name: str):
+    def get_enable_role_code_by_atr_name(self, atr_name: str):
         return [
-            role for role in self.roles if getattr(role, atr_name)
+            role.role_code for role in self.roles if getattr(role, atr_name)
         ]
 
 
 if __name__ == "__main__":
-    rb = RoleRights()
+    rb = AllRoles()
     print("kjdskjd", rb.roles_by_code)
     print(rb.get_role_codes())
     print(rb.get_all_rights())
-    print(rb.get_enable_role_by_atr_name("can_give_promo_code"))
+    print(rb.get_enable_role_code_by_atr_name("can_give_promo_code"))

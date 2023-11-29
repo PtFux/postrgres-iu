@@ -17,13 +17,13 @@ class Storage:
     async def check_registration_by_chat_id(self, chat_id: str):
         return True
 
-    async def get_status_contribution_by_student_id_number(self, student_id_number: str):
+    async def get_status_contribution_by_student_id_number(self, student_id_number: str) -> ContributionStatus:
         return ContributionStatus.STUDENTSHIP
 
     async def get_admin_chat_id(self):
         return "748216079"
 
-    async def get_user_role_from_chat_id(self, chat_id: str):
+    async def get_user_role_by_chat_id(self, chat_id: str, default=None):
         return UserRoleCode.DUTY
 
     async def check_right_student_id(self, student_id_number):

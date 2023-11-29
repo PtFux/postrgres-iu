@@ -1,12 +1,11 @@
 import logging
-import re
 
 from domain.dialogs.dialog_base import DialogBase
-from domain.dialogs.dialog_text.check_contribution_text import CheckContributionText
 from domain.dialogs.dialog_text.user_role_update_text import UserRoleUpdateText
-from domain.dialogs.kb.user_role_kb import UserRoleKB, UserRole
+from domain.dialogs.kb.user_role_kb import UserRoleKB
 from domain.domain_model.filter import Filter
 from domain.domain_model.message_domain import MessageDomain
+from domain.domain_model.roles import AllRoles
 
 
 class UserRoleUpdateDialog(DialogBase):
@@ -29,7 +28,7 @@ class UserRoleUpdateDialog(DialogBase):
             return True
 
     async def wait_user_role(self, message: MessageDomain):
-        if message.text in UserRole.values():
+        if message.text in AllRoles().get_role_codes():
             await self._send_message(message.chat_id, UserRoleUpdateText.QUERY_IS_SENDED)
             admin_chat_id = await self._get_admin_chat_id()
             await self._send_message(
