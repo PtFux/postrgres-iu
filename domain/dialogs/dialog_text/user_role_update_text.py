@@ -1,12 +1,13 @@
 from dataclasses import dataclass
 
+from domain.dialogs.dialog_text.base_dialog_text import BaseDialogText
 from domain.domain_model.filter import Filter
 
 
 @dataclass
-class UserRoleUpdateText:
+class UserRoleUpdateText(BaseDialogText):
     CHOOSE_ROLE = "Выберите роль, которую хотите запросить"
-    NEED_REGISTRATION = f"Необходима регистрация. Пожалуста, используте команду {Filter.COMMAND_START}"
+
     QUERY_IS_SENDED = "Заявка на изменение роли отправлена администратору, пожалуйста, ожидайте"
 
     QUERY_FOR_ROLE = "Пользователь @{username} запрашивает роль <b>{role}</b>. \
