@@ -55,6 +55,7 @@ class LoadingDataDialog(DialogBase):
             worker = CSVWorker()
             contributions, students = worker.get_contributions_and_students_from_file(message.file_path)
             await self._storage.insert_students(students)
+            await self._storage.insert_default_ratings_for_many_students(students)
             await self._storage.insert_contributions(contributions)
             await self._send_message(message.chat_id, LoadingDataText.SUCCESSFUL)
         except Exception:

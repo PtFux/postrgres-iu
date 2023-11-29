@@ -34,3 +34,6 @@ class Storage:
 
     async def insert_contributions(self, contributions: list[Contribution]):
         print(*contributions, sep="\n")
+
+    async def insert_default_ratings_for_many_students(self, students: list, amount: int = 0):
+        pass
