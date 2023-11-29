@@ -6,4 +6,5 @@ class Filter:
     USER_ROLE_UPDATE = "/update_role"
     GIVE_OUT_THE_ROLE = "/give_out_the_role"
     LOADING_DATA = "/loading_data"
+    MAIN_RATINGS = "/main_ratings"
     MAIN_MENU = "/main"

@@ -4,6 +4,7 @@ from bot.content_type import ContentType
 from domain.dialogs.check_contribution_dialog import CheckContributionDialog
 from domain.dialogs.dialog_base import DialogBase
 from domain.dialogs.loading_data_dialog import LoadingDataDialog
+from domain.dialogs.main_ratings_dialog import MainRatingsDialog
 from domain.dialogs.registration_dialog import RegistrationDialog
 from domain.dialogs.user_role_update_dialog import UserRoleUpdateDialog
 from domain.domain_model.message_domain import MessageDomain
@@ -32,6 +33,9 @@ class Scheduler:
                 self.dialogs.update({message.chat_id: dialog})
             case LoadingDataDialog.filter:
                 dialog = LoadingDataDialog(message.chat_id, self._storage, send_message=self._send_message)
+                self.dialogs.update({message.chat_id: dialog})
+            case MainRatingsDialog.filter:
+                dialog = MainRatingsDialog(message.chat_id, self._storage, send_message=self._send_message)
                 self.dialogs.update({message.chat_id: dialog})
             case _:
                 if message.chat_id in self.dialogs:

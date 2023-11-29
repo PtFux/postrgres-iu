@@ -24,7 +24,7 @@ class Storage:
         return "748216079"
 
     async def get_user_role_by_chat_id(self, chat_id: str, default=None):
-        return UserRoleCode.DUTY
+        return UserRoleCode.GOD
 
     async def check_right_student_id(self, student_id_number):
         return re.fullmatch(r'\d\d\w\d\d\d\d', student_id_number)
