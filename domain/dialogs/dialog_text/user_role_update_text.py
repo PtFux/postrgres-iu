@@ -6,6 +6,8 @@ from domain.domain_model.filter import Filter
 
 @dataclass
 class UserRoleUpdateText(BaseDialogText):
+    NAME = "Обновление роли"
+
     CHOOSE_ROLE = "Выберите роль, которую хотите запросить"
 
     QUERY_IS_SENDED = "Заявка на изменение роли отправлена администратору, пожалуйста, ожидайте"

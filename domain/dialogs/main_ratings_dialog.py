@@ -12,17 +12,26 @@ from domain.domain_model.roles import AllRoles
 
 class MainRatingsDialog(DialogBase):
     filter = Filter.MAIN_RATINGS
+    right = "can_do_with_ratings"
+    name = MainRatingsText.NAME
 
     def __init__(self, chat_id, storage, send_message):
         super().__init__(chat_id, storage, send_message)
         self._last_kb = None
         self._all_roles = AllRoles()
         self.rights = {
-            "can_give_promo_code": {"name": "Выдать промокод", "func": self.give_promo_code},
-            "can_check_other_rating": {"name": "Посмотреть свой", "func": self.check_other_rating},
-            "can_check_rating_stat": {"name": "Посмотреть топ", "func": self.check_rating_stat},
-            "can_update_rating": {"name": "Изменить рейтинг", "func": self.update_ratings},
-            "can_check_self_rating": {"name": "Посмотреть свой рейтинг", "func": self.check_self_rating}
+            "can_give_promo_code": {"name": "Выдать промокод", "func": self.give_promo_code,
+                                    "first_m": MainRatingsText.ENTER_NEW_PROMO_CODE_NAME},
+            "can_check_other_rating": {"name": "Посмотреть рейтинг", "func": self.check_other_rating,
+                                       "first_m": MainRatingsText.ENTER_STUDENT_ID_FOR_RATINGS},
+            "can_check_rating_stat": {"name": "Посмотреть топ", "func": self.check_rating_stat,
+                                      "first_m": MainRatingsText.ENTER_NUMBER_FOR_TOP},
+            "can_update_rating": {"name": "Изменить рейтинг", "func": self.update_ratings,
+                                  "first_m": MainRatingsText.ENTER_STUDENT_ID_FOR_RATINGS},
+            "can_check_self_rating": {"name": "Посмотреть свой рейтинг", "func": self.check_self_rating,
+                                      "first_m": MainRatingsText.ENTER_STUDENT_ID_FOR_RATINGS},
+            "can_use_promo_code": {"name": "Промокод", "func": self.use_promo_code,
+                                   "first_m": MainRatingsText.ENTER_PROMO_CODE}
         }
 
     async def start(self, message: MessageDomain):
@@ -46,7 +55,7 @@ class MainRatingsDialog(DialogBase):
         if role_code in enable_roles:
             self.temp = temp_right.get("func")
             await self._send_message(message.chat_id,
-                                     MainRatingsText.ACCESS_MOVE_TO.format(button_name=temp_right.get("name")))
+                                     temp_right.get("first_m"))
         else:
             markup_kb = await self._get_markup_kb_by_role(role_code)
             await self._send_message_with_kb(message.chat_id, MainRatingsText.PERMISSION_DENIED, markup_kb)
@@ -76,3 +85,6 @@ class MainRatingsDialog(DialogBase):
 
     async def check_rating_stat(self, message: MessageDomain):
         print(message.text)
+
+    async def use_promo_code(self, message: MessageDomain):
+        pass

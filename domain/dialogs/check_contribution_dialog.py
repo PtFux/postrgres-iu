@@ -11,6 +11,7 @@ from domain.domain_model.roles import AllRoles
 class CheckContributionDialog(DialogBase):
     filter = Filter.CHECK_CONTRIBUTION
     right = "can_check_contribution"
+    name = CheckContributionText.NAME
 
     def __init__(self, chat_id, storage, send_message):
         super().__init__(chat_id, storage, send_message)

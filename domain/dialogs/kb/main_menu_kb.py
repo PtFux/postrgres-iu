@@ -1,16 +1,17 @@
 from domain.dialogs.kb.base_kb import Button, BaseKB
 
 
-class MainRatingsKB(BaseKB):
-    size = (2, 2, 2)
+class MainMenuKB(BaseKB):
+    size: set = (1, 2)
 
     def __init__(self, rights: dict):
         self.buttons = {}
-        for right, values in rights.items():
+        for r_filter, values in rights.items():
             self.buttons.update({
-                right:
+                r_filter:
                 Button(
                     values.get("name"),
-                    right
+                    reply_text=values.get("reply_text")
                 )
             })
+

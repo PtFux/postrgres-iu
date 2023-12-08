@@ -10,6 +10,8 @@ from domain.domain_model.roles import AllRoles
 
 class UserRoleUpdateDialog(DialogBase):
     filter = Filter.USER_ROLE_UPDATE
+    right = "can_update_self_user_role"
+    name = UserRoleUpdateText.NAME
 
     def __init__(self, chat_id, storage, send_message):
         super().__init__(chat_id, storage, send_message)

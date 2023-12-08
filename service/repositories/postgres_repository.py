@@ -1,3 +1,6 @@
+from typing import Any
+from uuid import UUID
+
 from sqlalchemy import select, update
 
 from service.repositories.base.base_repository import BaseRepository
@@ -22,7 +25,7 @@ class PostgresRepository(BaseRepository):
         )
         return await self._insert_one(entity)
 
-    async def insert_many_contributions(self, many_contribution: list[dict]):
+    async def insert_many_contributions(self, many_contribution: list[dict | Any]):
         entities = []
         for contribution in many_contribution:
             student_id = await self.select_student_id_by_student_id_number(contribution.get("student_id"))
@@ -30,9 +33,9 @@ class PostgresRepository(BaseRepository):
             entities.append(ContributionEntity(
                 amount=contribution.get("amount"),
                 student_id=student_id,
-                season=contribution.get("season"),
+                season=int(contribution.get("season")),
                 year=contribution.get("year"),
-                status=contribution.get("status")
+                status=int(contribution.get("status"))
             ))
         return await self._insert_many(entities)
 
@@ -52,9 +55,41 @@ class PostgresRepository(BaseRepository):
         ) for student in students]
         return await self._insert_many(entities)
 
+    async def select_user_role_by_chat_id(self, tg_id: str):
+        stmt = select(UserEntity.role_code).where(UserEntity.telegram == tg_id)
+        return await self._select_one(stmt)
+
+    async def get_status_contribution_by_student_id_number(self, student_id_number: str):
+        stmt = select(StudentEntity.student_id).where(StudentEntity.student_id_number == student_id_number)
+        student_id = await self._select_one(stmt)
+        stmt = select(ContributionEntity.status).where(ContributionEntity.student_id == student_id)
+        return await self._select_one(stmt)
+
     async def select_student_id_by_student_id_number(self, student_id_number: str):
         stmt = select(StudentEntity.student_id).where(StudentEntity.student_id_number == student_id_number)
         return await self._select_one(stmt)
+
+    async def select_status_cont_by_season_student_id_number(self, student_id_number: str, season: int, year: int):
+        stmt = select(StudentEntity.student_id).where(StudentEntity.student_id_number == student_id_number)
+        student_id = await self._select_one(stmt)
+        select(ContributionEntity.status).where(
+            (ContributionEntity.student_id == student_id) and
+            (ContributionEntity.season == season) and
+            (ContributionEntity.year == year)
+        )
+
+    async def update_cont_by_student_id_number_season_and_year(self, cont: dict | Any):
+        stmt = select(StudentEntity.student_id).where(StudentEntity.student_id_number == cont.get("student_id_number"))
+        student_id = await self._select_one(stmt)
+        stmt = update(ContributionEntity).values(
+            amount=cont.get("amount"),
+            status=int(cont.get("status"))
+        ).where(
+            (ContributionEntity.student_id == student_id) and
+            (ContributionEntity.season == int(cont.get("season"))) and
+            (ContributionEntity.year == cont.get("year"))
+        )
+        return await self._query_without_result(stmt)
 
     async def update_rating_by_student_id_number(self, student_id_number: str, add_amount: int = 0,
                                                  amount: int = -1, last_amount: int = -1):
@@ -82,49 +117,17 @@ class PostgresRepository(BaseRepository):
         )
         return await self._insert_one(entity)
 
-    async def insert_right(self, name: str, description: str):
-        entity = RightEntity(
-            name=name,
-            description=description
-        )
-        return await self._insert_one(entity)
-
-    async def insert_role(self, code_name: str, description: str):
-        entity = RoleEntity(
-            code_name=code_name,
-            description=description
-        )
-        return await self._insert_one(entity)
-
-    async def insert_rule_with_role_code_name_and_right_name(self, role_code_name: str, right_name: str):
-        stmt = select(RoleEntity.role_id).where(RoleEntity.code_name == role_code_name)
-        role_id = await self._select_one(stmt)
-        stmt = select(RightEntity.right_id).where(RightEntity.name == right_name)
-        right_id = await self._select_one(stmt)
-
-        entity = RuleEntity(
-            role_id=role_id,
-            right_id=right_id
-        )
-        return await self._insert_one(entity)
-
     async def insert_user_with_student_id_number_and_role_code_name(self, student_id_number: str, role_code_name: str,
-                                                                    telegram: str, telephone: str = None):
+                                                                    telegram: str, tg_name: str = ""):
         student_id = await self.select_student_id_by_student_id_number(student_id_number)
-        role_id = await self._select_one(select(RoleEntity.role_id).where(RoleEntity.code_name == role_code_name))
-        if telephone:
-            entity = UserEntity(
-                student_id=student_id,
-                role_id=role_id,
-                telegram=telegram,
-                telephone=telephone
-            )
-        else:
-            entity = UserEntity(
-                student_id=student_id,
-                role_id=role_id,
-                telegram=telegram,
-            )
+
+        entity = UserEntity(
+            student_id=student_id,
+            role_code=role_code_name,
+            telegram=telegram,
+            tg_name=tg_name
+        )
+
         return await self._insert_one(entity)
 
     async def get_student_id_number_by_telegram(self, telegram: str):

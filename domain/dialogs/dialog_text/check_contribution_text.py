@@ -6,6 +6,8 @@ from domain.domain_model.filter import Filter
 
 @dataclass
 class CheckContributionText(BaseDialogText):
+    NAME = "Проверка профзносов"
+
     ENTER_STUDENT_ID = "Пожалуйста, ввведите номер студенческого билета, профвзносы которого вы хотите проверить. \
                         Используйте /main чтобы выйти из режима проверки профвзносов в главное меню"
     NEED_REGISTRATION = f"Необходима регистрация. Пожалуйста, введите команду {Filter.COMMAND_START}"

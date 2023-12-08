@@ -5,6 +5,8 @@ from domain.dialogs.dialog_text.base_dialog_text import BaseDialogText
 
 @dataclass
 class RegistrationText(BaseDialogText):
+    NAME = "Регистрация"
+
     HELLO = "Вас приветствует бот для проверки профвзносов и баллов рейтинга активиста профсоюза ИУ"
 
     REGISTRATION = "РЕГИСТРАЦИЯ"

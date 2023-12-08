@@ -9,3 +9,5 @@ class UserRoleCode:
     USER = "user"
 
     BASE = "base"
+
+    UNKNOWN = "unknown"

@@ -37,6 +37,10 @@ class Contribution:
         else:
             self.year = int(datetime.now().year)
 
-    def __str__(self):
+    def get(self, attr_name: str):
+        att = getattr(self, attr_name)
+        return getattr(att, "value", att)
+
+    def __repr__(self):
         return (f"Contribution mount={self.amount} student_id_number={self.student_id_number} \
 season={self.season} year={self.year} status={self.status} student_id = {self.student_id}")

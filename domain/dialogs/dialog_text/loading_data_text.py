@@ -6,6 +6,8 @@ from domain.domain_model.filter import Filter
 
 @dataclass
 class LoadingDataText(BaseDialogText):
+    NAME = "Загрузка профвзносов"
+
     WRITE_CSV = "Введите, пожалуйста, таблицу в формате:\n<code>{table}</code>"
 
     WAIT_CSV = "Ожидается файл cvs формата в виде таблицы:\n<code>{table}</code>\nИспользуйте команду {main_cmd}, чтобы выйти"

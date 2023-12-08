@@ -18,6 +18,7 @@ from domain.domain_model.roles import AllRoles
 class LoadingDataDialog(DialogBase):
     filter = Filter.LOADING_DATA
     right = "can_loading_data"
+    name = LoadingDataText.NAME
 
     def __init__(self, chat_id, storage, send_message):
         super().__init__(chat_id, storage, send_message)
@@ -54,11 +55,12 @@ class LoadingDataDialog(DialogBase):
         try:
             worker = CSVWorker()
             contributions, students = worker.get_contributions_and_students_from_file(message.file_path)
-            await self._storage.insert_students(students)
-            await self._storage.insert_default_ratings_for_many_students(students)
+            no_exist_students = await self._storage.insert_students(students)
+            await self._storage.insert_default_ratings_for_many_students(no_exist_students)
             await self._storage.insert_contributions(contributions)
             await self._send_message(message.chat_id, LoadingDataText.SUCCESSFUL)
-        except Exception:
+        except Exception as e:
+            print(e)
             await self._send_message(message.chat_id, LoadingDataText.EXCEPTION)
         return True
 
