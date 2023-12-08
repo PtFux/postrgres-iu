@@ -3,6 +3,7 @@ from uuid import UUID
 
 from sqlalchemy import select, update
 
+from domain.domain_model.rating_domain import RatingDomain
 from service.repositories.base.base_repository import BaseRepository
 from service.settings.postgres_settings import PostgresSettings
 
@@ -28,8 +29,7 @@ class PostgresRepository(BaseRepository):
     async def insert_many_contributions(self, many_contribution: list[dict | Any]):
         entities = []
         for contribution in many_contribution:
-            student_id = await self.select_student_id_by_student_id_number(contribution.get("student_id"))
-
+            student_id = await self.select_student_id_by_student_id_number(contribution.get("student_id_number"))
             entities.append(ContributionEntity(
                 amount=contribution.get("amount"),
                 student_id=student_id,
@@ -47,7 +47,7 @@ class PostgresRepository(BaseRepository):
         )
         return await self._insert_one(entity)
 
-    async def inset_many_student(self, students: list[dict]):
+    async def insert_many_student(self, students: list[dict | Any]):
         entities = [StudentEntity(
             name=student.get("name"),
             surname=student.get("surname"),
@@ -116,6 +116,17 @@ class PostgresRepository(BaseRepository):
             last_amount=last_amount
         )
         return await self._insert_one(entity)
+
+    async def insert_many_ratings(self, ratings: list[RatingDomain]):
+        entities = []
+        for rating in ratings:
+            entities.append(
+                RatingEntity(
+                    student_id=rating.student_id,
+                    amount=rating.amount,
+                )
+            )
+        return await self._insert_many(entities)
 
     async def insert_user_with_student_id_number_and_role_code_name(self, student_id_number: str, role_code_name: str,
                                                                     telegram: str, tg_name: str = ""):

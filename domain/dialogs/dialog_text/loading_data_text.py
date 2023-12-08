@@ -15,4 +15,8 @@ class LoadingDataText(BaseDialogText):
     EXCEPTION = "Не удалось загрузить данные."
     SUCCESSFUL = "Данные успешно загружены"
 
+    CONFIRM_LOADING = "Подтвердите загрузку данных словом <code>{code_agree}</code>"
+    AGREE_LOADING = "Да"
+    TABLE_ST_CONT = "Информация о студентах:\n{student_table}\n\nИнформаця о профвзносах:\n{cont_table}\n\n"
+
 

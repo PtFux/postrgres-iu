@@ -4,6 +4,7 @@ from pathlib import Path
 from common.contribution_status import ContributionStatus
 from common.format_contribution_file import FormatContributionFile
 from domain.domain_model.contribution import Contribution
+from domain.domain_model.student_domain import StudentDomain
 
 
 class CSVWorker:
@@ -30,11 +31,11 @@ class CSVWorker:
 
                 surname, name, *_ = row.get(FormatContributionFile.fio).split()
                 students.append(
-                    {
-                        "name": name,
-                        "surname": surname,
-                        "student_id_number": row.get(FormatContributionFile.student_id)
-                    }
+                    StudentDomain(
+                        name=name,
+                        surname=surname,
+                        student_id_number=row.get(FormatContributionFile.student_id)
+                    )
                 )
             return contributions, students
 

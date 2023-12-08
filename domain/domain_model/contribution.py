@@ -44,3 +44,6 @@ class Contribution:
     def __repr__(self):
         return (f"Contribution mount={self.amount} student_id_number={self.student_id_number} \
 season={self.season} year={self.year} status={self.status} student_id = {self.student_id}")
+
+    def __str__(self):
+        return f"Профзносы в размере <b>{self.amount}</b> студента <b>{self.student_id_number}</b>"
