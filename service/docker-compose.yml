@@ -40,7 +40,7 @@ services:
       PGDATA: "/var/lib/postgresql/data/pgdata"
     volumes:
       - ../init_db/:/docker-entrypoint-initdb.d
-      - prof_iu-data:/var/lib/postgresql/data
+      - prof_iu-data:/home/golgofa/'Документы'/university/prof_iu_bot/data
     ports:
       - "5433:5432"
     healthcheck:
@@ -66,7 +66,7 @@ services:
       PGADMIN_DEFAULT_PASSWORD: "1love3000porf_iu"
       PGADMIN_CONFIG_SERVER_MODE: "False"
     volumes:
-      - pgadmin-data:/var/lib/pgadmin
+      - pgadmin-data:/home/golgofa/'Документы'/university/prof_iu_bot/pg_admin/data
     ports:
       - "5050:80"
     restart: unless-stopped

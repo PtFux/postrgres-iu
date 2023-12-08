@@ -8,14 +8,15 @@ from bot.content_type import ContentType
 from common.format_contribution_file import FormatContributionFile
 from domain.domain_model.message_domain import MessageDomain
 from domain.scheduler import Scheduler
+from domain.storage import Storage
 
 
 class Behavior:
 
-    def __init__(self, dp: Dispatcher, bot: Bot):
+    def __init__(self, dp: Dispatcher, bot: Bot, storage: Storage):
         self._dp = dp
         self._bot = bot
-        self._scheduler = Scheduler(self.send_message)
+        self._scheduler = Scheduler(self.send_message, storage)
 
     def configure(self):
         logging.info(f"bot: Configure behavior")

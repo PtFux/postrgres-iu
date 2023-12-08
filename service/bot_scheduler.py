@@ -1,4 +1,4 @@
-from repositories.base.base_repository import BaseRepository
+from .repositories.base.base_repository import BaseRepository
 
 
 class BotScheduler:
