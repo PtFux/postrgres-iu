@@ -74,7 +74,8 @@ class Storage:
             status = await self._repository.select_status_cont_by_season_student_id_number(cont.student_id_number,
                                                                                            season=int(cont.season.value),
                                                                                            year=cont.year)
-            if not status:
+            print("Contribution status", status, cont)
+            if status is None:
                 not_exit_contributions.append(cont)
             elif ContributionStatus(status) != cont.status:
                 not_right_contributions.append(cont)

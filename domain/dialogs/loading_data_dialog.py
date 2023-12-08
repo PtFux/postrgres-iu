@@ -50,7 +50,7 @@ class LoadingDataDialog(DialogBase):
 
     async def wait_document_file(self, message: MessageDomain):
         if message.content_type != ContentType.DOCUMENT:
-            self._send_message(message.chat_id, LoadingDataText.WAIT_CSV.format(
+            await self._send_message(message.chat_id, LoadingDataText.WAIT_CSV.format(
                 table=" | ".join(FormatContributionFile().get_headliner()),
                 main_cmd=Filter.MAIN_MENU
             ))
@@ -77,6 +77,7 @@ class LoadingDataDialog(DialogBase):
                 await self._send_message(message.chat_id, LoadingDataText.SUCCESSFUL)
             except Exception as e:
                 await self._send_message(message.chat_id, LoadingDataText.EXCEPTION)
+                print(e)
             return True
         self.temp = self.start
 

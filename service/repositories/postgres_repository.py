@@ -1,5 +1,5 @@
 from typing import Any
-from uuid import UUID
+
 
 from sqlalchemy import select, update
 
@@ -60,9 +60,12 @@ class PostgresRepository(BaseRepository):
         return await self._select_one(stmt)
 
     async def get_status_contribution_by_student_id_number(self, student_id_number: str):
+        print("GET ", student_id_number)
         stmt = select(StudentEntity.student_id).where(StudentEntity.student_id_number == student_id_number)
         student_id = await self._select_one(stmt)
+        print("GET student_id", student_id, type(student_id))
         stmt = select(ContributionEntity.status).where(ContributionEntity.student_id == student_id)
+        print("STMT", stmt)
         return await self._select_one(stmt)
 
     async def select_student_id_by_student_id_number(self, student_id_number: str):
@@ -72,11 +75,12 @@ class PostgresRepository(BaseRepository):
     async def select_status_cont_by_season_student_id_number(self, student_id_number: str, season: int, year: int):
         stmt = select(StudentEntity.student_id).where(StudentEntity.student_id_number == student_id_number)
         student_id = await self._select_one(stmt)
-        select(ContributionEntity.status).where(
+        stmt = select(ContributionEntity.status).where(
             (ContributionEntity.student_id == student_id) and
             (ContributionEntity.season == season) and
             (ContributionEntity.year == year)
         )
+        return await self._select_one(stmt)
 
     async def update_cont_by_student_id_number_season_and_year(self, cont: dict | Any):
         stmt = select(StudentEntity.student_id).where(StudentEntity.student_id_number == cont.get("student_id_number"))
