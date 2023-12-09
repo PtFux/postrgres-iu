@@ -19,5 +19,5 @@ class StudentEntity(DeclarativeBase):
     rating = relationship('RatingEntity', backref='student',
                           lazy='select')
     contributions = relationship('ContributionEntity', backref='student',
-                          lazy='select')
+                                 lazy='select')
 

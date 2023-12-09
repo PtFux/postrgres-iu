@@ -1,7 +1,7 @@
 from typing import Any
 
 
-from sqlalchemy import select, update
+from sqlalchemy import select, update, UUID
 
 from domain.domain_model.rating_domain import RatingDomain
 from service.repositories.base.base_repository import BaseRepository
@@ -60,12 +60,20 @@ class PostgresRepository(BaseRepository):
         return await self._select_one(stmt)
 
     async def get_status_contribution_by_student_id_number(self, student_id_number: str):
-        print("GET ", student_id_number)
         stmt = select(StudentEntity.student_id).where(StudentEntity.student_id_number == student_id_number)
-        student_id = await self._select_one(stmt)
-        print("GET student_id", student_id, type(student_id))
+        student_id: UUID = await self._select_one(stmt)
         stmt = select(ContributionEntity.status).where(ContributionEntity.student_id == student_id)
-        print("STMT", stmt)
+        return await self._select_one(stmt)
+
+    async def get_rating_by_user_chat_id(self, telegram: str):
+        stmt = select(UserEntity.student_id).where(UserEntity.telegram == telegram)
+        student_id: UUID = await self._select_one(stmt)
+        stmt = select(RatingEntity.amount).where(RatingEntity.student_id == student_id)
+        return await self._select_one(stmt)
+
+    async def get_rating_by_student_id(self, student_id_number: str):
+        student_id: UUID = await self.select_student_id_by_student_id_number(student_id_number)
+        stmt = select(RatingEntity.amount).where(RatingEntity.student_id == student_id)
         return await self._select_one(stmt)
 
     async def select_student_id_by_student_id_number(self, student_id_number: str):
@@ -83,7 +91,8 @@ class PostgresRepository(BaseRepository):
         return await self._select_one(stmt)
 
     async def update_cont_by_student_id_number_season_and_year(self, cont: dict | Any):
-        stmt = select(StudentEntity.student_id).where(StudentEntity.student_id_number == cont.get("student_id_number"))
+        stmt = select(StudentEntity.student_id).where(
+            StudentEntity.student_id_number == str(cont.get("student_id_number")))
         student_id = await self._select_one(stmt)
         stmt = update(ContributionEntity).values(
             amount=cont.get("amount"),
@@ -97,13 +106,15 @@ class PostgresRepository(BaseRepository):
 
     async def update_rating_by_student_id_number(self, student_id_number: str, add_amount: int = 0,
                                                  amount: int = -1, last_amount: int = -1):
-        student_id = self.select_student_id_by_student_id_number(student_id_number)
+        student_id: UUID = await self.select_student_id_by_student_id_number(student_id_number)
+        if not student_id:
+            return True
 
         stmt = select(RatingEntity).where(RatingEntity.student_id == student_id)
         entity = await self._select_one(stmt)
 
         if entity:
-            amount = entity.amount + add_amount if amount == -1 else amount
+            amount = entity.amount + add_amount if amount == -1 else amount + add_amount
             stmt = update(
                 RatingEntity
             ).values(

@@ -9,7 +9,6 @@ class StudentDomain:
         self.student_id = student_id
 
     def get(self, name: str):
-        print(name, self.student_id_number, self.student_id)
         return getattr(self, name)
 
     def __str__(self):

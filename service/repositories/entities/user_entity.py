@@ -13,6 +13,6 @@ class UserEntity(DeclarativeBase):
 
     student_id = Column(UUID, ForeignKey('StudentEntity.student_id'))
 
-    telegram = Column(String, nullable=False, unique=True)
+    telegram = Column(String, nullable=False, unique=True, primary_key=True)
     tg_name = Column(String, nullable=True)
     role_code = Column(String, nullable=True)

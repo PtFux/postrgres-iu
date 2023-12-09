@@ -3,13 +3,9 @@ import logging
 import sys
 from os import getenv
 
-from aiogram import Bot, Dispatcher, Router, types
+from aiogram import Bot, Dispatcher
 from aiogram.enums import ParseMode
-from aiogram.filters import CommandStart
-from aiogram.types import Message
-from aiogram.utils.markdown import hbold
 
-from domain.scheduler import Scheduler
 from domain.storage import Storage
 from secret_env import BOT_TOKEN
 from bot.behavior import Behavior

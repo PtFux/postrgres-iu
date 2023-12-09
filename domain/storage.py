@@ -5,6 +5,7 @@ from typing import Any
 from common.contribution_status import ContributionStatus
 from common.user_role_code import UserRoleCode
 from domain.domain_model.contribution import Contribution
+from domain.domain_model.promo_code_domain import PromoCodeDomain
 from domain.domain_model.rating_domain import RatingDomain
 from domain.domain_model.student_domain import StudentDomain
 from service.repositories.postgres_repository import PostgresRepository
@@ -54,6 +55,21 @@ class Storage:
         logging.info(f"Storage: Check role={role} by chat_id={chat_id}")
         return role if role else default
 
+    async def get_rating_by_user_chat_id(self, chat_id: str) -> int | None:
+        return await self._repository.get_rating_by_user_chat_id(chat_id)
+
+    async def get_rating_by_student_id(self, student_id_number: str) -> int | None:
+        rating = await self._repository.get_rating_by_student_id(student_id_number)
+        logging.info(f"Storage: Got rating={rating} of student_id {student_id_number}")
+        return rating
+
+    async def update_rating_by_student_id_on_amount(self, rating: RatingDomain):
+        logging.info(f"Storage: get update rating student={rating.student_id} for amount={rating.add_amount}")
+        return await self._repository.update_rating_by_student_id_number(
+            student_id_number=rating.student_id,
+            add_amount=rating.add_amount
+        )
+
     async def check_right_student_id(self, student_id_number):
         return re.fullmatch(r'\d\d\w\d\d\d\d', student_id_number)
 
@@ -67,14 +83,12 @@ class Storage:
         return not_exist_student
 
     async def insert_contributions(self, contributions: list[Contribution]):
-        print("contrib", contributions)
         not_exit_contributions = []
         not_right_contributions = []
         for cont in contributions:
             status = await self._repository.select_status_cont_by_season_student_id_number(cont.student_id_number,
                                                                                            season=int(cont.season.value),
                                                                                            year=cont.year)
-            print("Contribution status", status, cont)
             if status is None:
                 not_exit_contributions.append(cont)
             elif ContributionStatus(status) != cont.status:
@@ -88,7 +102,6 @@ class Storage:
         logging.info(f"Storage: Updated next contributions={not_right_contributions}")
 
     async def insert_default_ratings_for_many_students(self, students: list[dict | StudentDomain], amount: int = 0):
-        print("students", students)
         ratings = []
         for student in students:
             ratings.append(
@@ -97,7 +110,9 @@ class Storage:
                     amount=amount
                 )
             )
-        print("OK insert", ratings)
         if ratings:
             await self._repository.insert_many_ratings(ratings)
-        print(ratings)
+
+    async def insert_new_promo_code(self, promo_code: PromoCodeDomain):
+        pass
+
