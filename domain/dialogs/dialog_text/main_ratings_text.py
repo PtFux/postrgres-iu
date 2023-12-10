@@ -38,3 +38,7 @@ class MainRatingsText(BaseDialogText):
 
     ENTER_ADD_AMOUNT_RATING = "Введите число, на значение которого вы хотите изменить рейтинг"
     SUCCESSFUL_ADDING_AMOUNT_FOR_RATINGS = "Рейтинг студента {student_id} успешно изменен на значение {add_amount}"
+
+    USED_PROMO_CODE_ALREADY = "Вы уже использовали этот промокод! Повторное использование невозможно"
+    NOT_EXIST_PROMO_CODE = "Этого промокода не существует либо срок его действия истек."
+    SUCCESSFUL_USING_PROMO_CODE = "Успешное применение промокода! Ваш рейтинг теперь равен {rating}"

@@ -160,7 +160,7 @@ class MainRatingsDialog(DialogBase):
         match message.text:
             case MainRatingsText.ENTER_AGREE:
                 try:
-                    await self.add_new_promo_code()
+                    await self._add_new_promo_code()
                 except Exception:
                     await self._send_message(message.chat_id, MainRatingsText.EXCEPTION)
                     return True
@@ -181,7 +181,7 @@ class MainRatingsDialog(DialogBase):
                                                                    not_access=MainRatingsText.ENTER_NOT_AGREE
                                                                    ))
 
-    async def add_new_promo_code(self):
+    async def _add_new_promo_code(self):
         await self._storage.insert_new_promo_code(self._promo_code)
 
     async def check_self_rating(self, message: MessageDomain):
@@ -208,7 +208,55 @@ class MainRatingsDialog(DialogBase):
             await self._send_message(message.chat_id, MainRatingsText.ENTER_STUDENT_ID_FOR_RATINGS)
 
     async def check_rating_stat(self, message: MessageDomain):
-        print(message.text)
+        if message.text.isdigit():
+            top_rating = await self._select_top_rating(int(message.text))
+            await self._send_message(message.chat_id,
+                                     str(top_rating))
+            return True
+        await self._send_message(message.chat_id, MainRatingsText.NO_KNOWN)
+        await self._send_message(message.chat_id, MainRatingsText.ENTER_NUMBER_FOR_TOP)
+
+    async def _select_top_rating(self, size_top: int):
+        top_ratings = await self._storage.select_top_rating(size=size_top)
+        txt = []
+        i = 1
+        for row in top_ratings:
+            txt.append(
+                "<b>{i} | </b>{student:<{len_stud}} — <b>{amount:^{len_amount}}</b>".format(
+                    student="<i>{fio}, {stud}</i>".format(
+                        fio=row[0],
+                        stud=row[1]
+                    ),
+                    i=i,
+                    amount=row[2],
+                    len_amount=7,
+                    len_stud=25
+                )
+            )
+            i += 1
+        return "\n".join(txt)
 
     async def use_promo_code(self, message: MessageDomain):
-        pass
+        amount = await self._storage.get_amount_by_promo_code(message.text)
+        if not amount:
+            await self._send_message(message.chat_id, MainRatingsText.NOT_EXIST_PROMO_CODE)
+            return True
+        if await self._storage.check_using_promo_code(promo_name=message.text, telegram=message.chat_id):
+            await self._send_message(message.chat_id, MainRatingsText.USED_PROMO_CODE_ALREADY)
+            return True
+        try:
+            count = await self._storage.pop_promo_code_and_get_count(message.text)
+            if count <= 0:
+                await self._storage.delete_info_about_promo_code(message.text)
+            else:
+                await self._storage.add_using_promo_code(message.text, message.chat_id)
+            await self._storage.update_rating_by_telegram_on_amount(telegram=message.chat_id, add_amount=amount)
+            rating = await self._storage.get_rating_by_user_chat_id(message.chat_id)
+        except Exception as e:
+            logging.exception(f"Exception in MainRatings dialog: {e}")
+            await self._send_message(message.chat_id, MainRatingsText.EXCEPTION)
+            return True
+        await self._send_message(message.chat_id,
+                                 MainRatingsText.SUCCESSFUL_USING_PROMO_CODE.format(rating=rating))
+        return True
+
