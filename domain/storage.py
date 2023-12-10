@@ -50,6 +50,9 @@ class Storage:
     async def get_admin_chat_id(self):
         return "748216079"
 
+    async def select_top_rating(self, size: int):
+        return await self._repository.select_top_rating(size)
+
     async def get_user_role_by_chat_id(self, chat_id: str, default=UserRoleCode.UNKNOWN):
         role = await self._repository.select_user_role_by_chat_id(chat_id)
         logging.info(f"Storage: Check role={role} by chat_id={chat_id}")
@@ -114,5 +117,27 @@ class Storage:
             await self._repository.insert_many_ratings(ratings)
 
     async def insert_new_promo_code(self, promo_code: PromoCodeDomain):
-        pass
+        await self._repository.insert_one_promo_code(
+            code=promo_code.name, amount=promo_code.amount, count=promo_code.count
+        )
+
+    async def get_amount_by_promo_code(self, code: str) -> int | None:
+        return await self._repository.get_amount_by_promo_code(code)
+
+    async def check_using_promo_code(self, promo_name: str, telegram: str) -> Any | None:
+        return await self._repository.get_using_promo_code(promo_name, telegram)
+
+    async def update_rating_by_telegram_on_amount(self, telegram: str, add_amount: int):
+        await self._repository.update_rating_by_telegram(telegram, add_amount)
+
+    async def add_using_promo_code(self, code: str, telegram: str):
+        await self._repository.insert_one_using_promo_code(code, telegram)
+
+    async def pop_promo_code_and_get_count(self, code: str) -> int:
+        await self._repository.update_count_of_promo_code(code, add_count=-1)
+        return await self._repository.get_count_promo_code(code)
+
+    async def delete_info_about_promo_code(self, code: str):
+        await self._repository.delete_one_promo_code(code)
+        await self._repository.delete_all_using_promo_code(code)
 
