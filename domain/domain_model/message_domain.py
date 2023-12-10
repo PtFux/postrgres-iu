@@ -18,3 +18,5 @@ class MessageDomain:
         self.content_type = content_type
         self.file_path = file_path
 
+    def __repr__(self):
+        return f"<MessageDomain object chat_id={self.chat_id} text={self.text} by user={self.username}"
